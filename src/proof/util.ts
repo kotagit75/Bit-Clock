@@ -24,17 +24,4 @@ function keyToSk(key: NodeRSA): string {
     return toHexString(key.exportKey("pkcs1-private-der"))
 }
 
-var median = (arr: number[]): number => {
-    var half = (arr.length/2)|0;
-    var sortedArray = arr.sort(
-        function(x, y) {
-        return x - y;
-    });
-
-    if (sortedArray) {
-        return sortedArray[half] ?? 0;
-    }
-    return ((sortedArray[half-1] ?? 0) + (sortedArray[half] ?? 0))/2;
-};
-
-export { toHexString, toBuffer, pkToKey, skToKey, keyToPk, keyToSk, median }
+export { toHexString, toBuffer, pkToKey, skToKey, keyToPk, keyToSk }
