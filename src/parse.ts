@@ -3,34 +3,41 @@ import { newProofSet, Proof, Stamp } from "./proof/proof"
 import { flow, pipe } from "fp-ts/lib/function"
 import { Message } from "./p2p"
 
+const vdfResultSchema = z.object({
+    pi: z.bigint(),
+    l: z.bigint(),
+    y: z.bigint()
+})
 const stampSchema = z.object({
-  address: z.string(),
-  count: z.number(),
-  sign: z.number().array(),
+    address: z.string(),
+    count: z.number(),
+    vdfResult: vdfResultSchema,
+    sign: z.number().array(),
 })
 const proofSchema = z.object({
-  data: z.string(),
-  stamps: stampSchema.array(),
-  sk: z.string(),
-  address: z.string(),
-  sign: z.number().array(),
+    data: z.string(),
+    stamps: stampSchema.array(),
+    sk: z.string(),
+    address: z.string(),
+    sign: z.number().array(),
 })
 const messageSchema = z.object({
-    type: z.enum(["NONE", "REQUEST_STAMP", "UPDATE_PROOFPOOL"]),
+    type: z.enum(["NONE", "REQUEST_STAMP", "RESPONCE_STAMP", "UPDATE_PROOFPOOL"]),
     data: z.string(),
+    data2: z.string(),
 })
 const proofPoolSchema = proofSchema.array()
-const exportProof = (proof: Proof): string => {
-    return JSON.stringify(proof)
+const exportProof = (proof: Proof): Proof => {
+    return proof
 }
-const exportStamp = (stamp: Stamp): string => {
-    return JSON.stringify(stamp)
+const exportStamp = (stamp: Stamp): Stamp => {
+    return stamp
 }
-const exportProofPool = (proofPool: Set<Proof>): string => {
-    return JSON.stringify(Array.from(proofPool))
+const exportProofPool = (proofPool: Set<Proof>): Array<Proof> => {
+    return Array.from(proofPool)
 }
-const exportMessage = (message: Message): string => {
-    return JSON.stringify(message)
+const exportMessage = (message: Message): Message => {
+    return message
 }
 const import_ = <T extends object>(schema: ZodObject|ZodArray) => {
     return (exported: string): T|undefined => {
