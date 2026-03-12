@@ -1,3 +1,4 @@
+import os from "os"
 import express from "express";
 import cors from "cors";
 
@@ -20,7 +21,13 @@ export const initAPIServer = () => {
     })
 
     app.get("/status", (req, res) => {
-        res.send("running")
+        res.send({
+            "status": "running",
+            "uptime": process.uptime(),
+            "resource": {
+                "memory": process.memoryUsage().heapUsed,
+            },
+        })
     })
     app.get("/address", (req, res) => {
         res.send(getAddress())
