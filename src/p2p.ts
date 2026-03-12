@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { createStamp, updateProofPool } from "./proof/node";
-import { Stamp, type Proof } from "./proof/proof";
+import { MAX_NUMBER_OF_STAMPS, Stamp, type Proof } from "./proof/proof";
 import type { URL } from "url";
 import { logger } from "./logger";
 import { exportMessage, exportProofPool, exportStamp, importMessage, importProofPool, importStamp } from "./parse";
@@ -94,7 +94,7 @@ const broadcast = async (message: Message): Promise<string[]> => {
 const broadcastRequestStamps = async (pk: string): Promise<void> => {
     await broadcast(new Message("REQUEST_STAMP", pk, ""))
 }
-const needNumberOfStamps = 0
+const needNumberOfStamps = MAX_NUMBER_OF_STAMPS - 1
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 const broadcastAndGetRequestStamps = async (pk: string): Promise<Stamp[]> => {
     await broadcastRequestStamps(pk)
@@ -104,6 +104,7 @@ const broadcastAndGetRequestStamps = async (pk: string): Promise<Stamp[]> => {
         await sleep(100);
         resStamps = stampPool.get(pk)
     }
+    stampPool.set(pk, [])
     if(!resStamps){
         return []
     }
