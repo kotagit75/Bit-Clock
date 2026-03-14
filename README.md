@@ -1,21 +1,21 @@
 <div align="center">
     <img src="assets/icon.svg" width=200 height=200>
-    <h1>Bit:Clock</h1>
+    <h1>BitClock</h1>
 </div>
 
-Bit:Clock is a ledger-free distributed timestamp system. You can issue timestamps without relying on centralized servers or large-scale blockchains. By each node generate and share stamps and compile them as proof, we can verify the order in which the data was generated.
+BitClock is a ledger-free distributed timestamp system. You can issue timestamps without relying on centralized servers or large-scale blockchains. By each node generate and share stamps and compile them as proof, we can verify the order in which the data was generated.
 
 [![License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
 
 > [!NOTE]
-> Bit:Clock is currently in active development.
+> BitClock is currently in active development.
 
 ## Documents
 [About the algorithm (Not finished yet)](docs/algorithm.md)
 ## :rocket: Set up
 ```bash
 # Clone the repository (or Download ZIP)
-git clone https://github.com/kotagit75/Bit-Clock.git
+git clone https://github.com/kotagit75/bitclock.git
 
 # Navigate to the project directory
 cd Bit-Clock
@@ -43,4 +43,4 @@ curl http://localhost:8080/status
 ```
 
 ## License
-[Bit:Clock is under the MIT License.](LICENSE)
+[BitClock is under the MIT License.](LICENSE)
