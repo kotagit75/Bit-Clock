@@ -71,7 +71,7 @@ const initP2PServer = () => {
                 break
         }
     })
-    app.listen(PORT, () => {
+    return app.listen(PORT, () => {
         logger.info("P2P", `P2P server is running on http://localhost:${PORT}`)
     })
 }

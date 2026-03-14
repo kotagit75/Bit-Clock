@@ -70,7 +70,7 @@ export const initAPIServer = () => {
         }
     })
 
-    app.listen(PORT, () => {
-        logger.info("API", `Http server is running on http://localhost:${PORT}`)
+    return app.listen(PORT, () => {
+        logger.info("API", `API server is running on http://localhost:${PORT}`)
     })
 }
