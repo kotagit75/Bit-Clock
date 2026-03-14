@@ -3,15 +3,10 @@ import { newProofSet, Proof, Stamp } from "./proof/proof"
 import { flow, pipe } from "fp-ts/lib/function"
 import { Message } from "./p2p"
 
-const vdfResultSchema = z.object({
-    pi: z.bigint(),
-    l: z.bigint(),
-    y: z.bigint()
-})
 const stampSchema = z.object({
     address: z.string(),
     count: z.number(),
-    vdfResult: vdfResultSchema,
+    nonce: z.number(),
     sign: z.number().array(),
 })
 const proofSchema = z.object({
