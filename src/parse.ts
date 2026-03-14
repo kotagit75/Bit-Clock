@@ -7,6 +7,7 @@ const stampSchema = z.object({
     address: z.string(),
     count: z.number(),
     nonce: z.number(),
+    pk: z.string(),
     sign: z.number().array(),
 })
 const proofSchema = z.object({
