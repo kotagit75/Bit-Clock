@@ -1,8 +1,8 @@
 import NodeRSA from "node-rsa";
 import fs from "fs";
 
-import { keyToPk, keyToSk, skToKey } from "./util";
-import { calcNonce, isValidProof, Proof, proofToStringForSign, Stamp, stampToStringForSign, type Address, type Signature } from "./proof";
+import { keyToPk, keyToSk, median, skToKey } from "./util";
+import { calcNonce, compareTime, isValidProof, Proof, proofToStringForSign, Stamp, stampToStringForSign, type Address, type Signature } from "./proof";
 import { Counter } from "./counter";
 import { broadcastAndGetRequestStamps, broadcastUpdateProofPool } from "../p2p";
 import { logger } from "@/logger";
@@ -26,13 +26,7 @@ const initNode = () => {
     }
     address = keyToPk(nodeKey)
     
-    counter = new Counter((() => {
-        const lastestCount = getLastestCountOfMine()
-        if(lastestCount < 0) {
-            return 0
-        }
-        return lastestCount
-    })())
+    counter = new Counter(getLastestCountOfMine())
 }
 const generateNodeKey = () => {
     nodeKey = new NodeRSA({ b: 512 })
@@ -47,24 +41,28 @@ const readNodeKey = () => {
 const getAddress = (): Address => address
 const getProofPool = (): Set<Proof> => proofPool
 const createSign = (data: string): Signature => Array.from(nodeKey.sign(data))
-const createStamp = (pk: string): Stamp => {
-    const count = counter.increment()
-    const nonce = calcNonce(getAddress(), count, pk)
+const createStamp = (pk: string, difficulty: number): Stamp => {
+    const count = counter.getCount()+1
+    const nonce = calcNonce(getAddress(), count, pk, difficulty)
     const sign = createSign(stampToStringForSign(pk, getAddress(), count, nonce))
     return new Stamp(getAddress(), count, pk, nonce, sign)
 }
-const fetchStamps = async (pk: string): Promise<Stamp[]> => {
-    var myStamp = createStamp(pk)
+const fetchStamps = async (pk: string, difficulty: number): Promise<Stamp[]> => {
+    var myStamp = createStamp(pk, difficulty)
     var peerStamps = await broadcastAndGetRequestStamps(pk)
     return peerStamps.concat(myStamp)
 }
 const createProof = async (data: string): Promise<Proof> => {
     var proofKey = new NodeRSA({ b: 512 })
-    var stamps = await fetchStamps(keyToPk(proofKey))
+    const difficulty = calcDifficulty()
+    logger.info("NODE", "Creating proof. difficulty:", difficulty)
+    var stamps = await fetchStamps(keyToPk(proofKey), difficulty)
     var sk = keyToSk(proofKey)
     var stringforSign = proofToStringForSign(data, stamps, sk, getAddress())
-    return new Proof(data, stamps, sk, getAddress(), createSign(stringforSign))
+    return new Proof(data, stamps, sk, getAddress(), createSign(stringforSign), difficulty)
 }
+const sortProofPool = (): Proof[] => Array.from(proofPool).sort(compareTime)
+const getLastestProofs = (numberOfStamps: number): Proof[] => sortProofPool().slice(0,numberOfStamps)
 const getLastestStampOfAddress = (address: Address): Stamp|undefined => {
     var lastestStamp = Array.from(proofPool).flatMap((proof, _, __) => proof.stamps).filter((stamp, _, __) => stamp.address == address).reduce((a,b)=>a.count>b.count?a:b, new Stamp("", -1, "", 0, []))
     if(lastestStamp.count < 0) {
@@ -75,7 +73,7 @@ const getLastestStampOfAddress = (address: Address): Stamp|undefined => {
 const getLastestCountOfAddress = (address: Address): number => {
     var lastestStamp = getLastestStampOfAddress(address)
     if(!lastestStamp) {
-        return -1
+        return 0
     }
     return lastestStamp.count
 }
@@ -83,18 +81,22 @@ const getLastestCountOfMine = ():number => getLastestCountOfAddress(getAddress()
 
 const minValidStampRate = 0.8
 const checkProofStamps = async (proof: Proof): Promise<boolean> => {
-    var key = new NodeRSA({ b: 512 })
-    var addressesForCheck = (await fetchStamps(keyToPk(key))).map((stamp, _, __) => stamp.address)
-    var addressesOfProof = proof.stamps.map((stamp, _, __) => stamp.address)
+    const key = new NodeRSA({ b: 512 })
+    const addressesForCheck = (await fetchStamps(keyToPk(key), calcDifficulty())).map((stamp, _, __) => stamp.address)
+    const addressesOfProof = proof.stamps.map((stamp, _, __) => stamp.address)
     const numberOfIncludedAddresses = addressesOfProof.map((address, _, __) => addressesForCheck.includes(address)).filter(Boolean).length
     const stampRate = numberOfIncludedAddresses/addressesOfProof.length
     const isValidStampAddressesRate = stampRate >= minValidStampRate
-    const isValidStampCounts = proof.stamps.every((stamp, _, __) => getLastestCountOfAddress(stamp.address) < stamp.count)
+    const isValidStampCounts = proof.stamps.every((stamp, _, __) => getLastestCountOfAddress(stamp.address)+1 == stamp.count)
     return isValidStampAddressesRate && isValidStampCounts
 }
 const addProof = async (proof: Proof): Promise<boolean> => {
     if (isValidProof(proof) && await checkProofStamps(proof)){
         proofPool.add(proof)
+        const stamp = proof.stamps[proof.stamps.map((s, _, __) => s.address).indexOf(getAddress())]
+        if(stamp != undefined){
+            counter.increment()
+        }
         return true
     }
     return false
@@ -107,6 +109,33 @@ const updateProofPool = async (newProofPool: Set<Proof>) => {
     if (isProofAddedToSet.includes(true) || proofPool.difference(newProofPool).size > 0) {
         broadcastUpdateProofPool(proofPool)
     }
+}
+
+// const targetCountIncrease = 10
+// const baseDifficulty = 4
+// const calcDifficulty = (): number => {
+//     if(proofPool.size < 2){
+//         return baseDifficulty
+//     }
+//     const diff = sortProofPool().map((p, _, __)=>p.).map((v, i, a) => {
+//         const left = a[i - 1] ?? v;
+//         const right = a[i + 1] ?? v;
+//         return Math.abs(v - left) + Math.abs(v - right);
+//     })
+//     return Math.floor(diff.reduce((difficulty, actualTime, __) => {
+//         const rate = targetTime/actualTime
+//         if(rate > 1.2){
+//             return 1.2*difficulty
+//         }else if(0.8 < rate){
+//             return 0.8*difficulty
+//         }else {
+//             return rate*difficulty
+//         }
+//     }, baseDifficulty))
+// }
+const calcDifficulty = (): number =>{
+    const base = 5
+    return base
 }
 
 export { initNode, getAddress, createSign, createStamp, createProof, addProof, getProofPool, updateProofPool }
