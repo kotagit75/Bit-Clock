@@ -11,7 +11,7 @@ class Stamp{
 }
 const stampToStringForSign = (pk: string, address: Address, count: number, nonce: number): string => pk + address + String(count) + String(nonce)
 
-const verifyNonce = (address: Address, count: number, pk: string, nonce: number, cost: number): boolean=>hashSHA256(address + String(count) + pk + String(nonce)).startsWith("0".repeat(cost))
+const verifyNonce = (address: Address, count: number, pk: string, nonce: number, cost: number): boolean=>hashSHA256(pk + address + String(count) + String(nonce)).startsWith("0".repeat(cost))
 const calcNonce = (address: Address, count: number, pk: string, difficulty: number): number => {
     var nonce = 0
     while(!verifyNonce(address, count, pk, nonce, difficulty)){

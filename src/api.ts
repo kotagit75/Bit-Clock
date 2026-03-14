@@ -1,4 +1,3 @@
-import os from "os"
 import express from "express";
 import cors from "cors";
 

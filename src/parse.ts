@@ -1,6 +1,6 @@
 import z, { ZodArray, ZodObject } from "zod"
 import { newProofSet, Proof, Stamp } from "./proof/proof"
-import { flow, pipe } from "fp-ts/lib/function"
+import { flow } from "fp-ts/lib/function"
 import { Message } from "./p2p"
 
 const stampSchema = z.object({
@@ -15,6 +15,7 @@ const proofSchema = z.object({
     stamps: stampSchema.array(),
     sk: z.string(),
     address: z.string(),
+    difficulty: z.number(),
     sign: z.number().array(),
 })
 const messageSchema = z.object({
