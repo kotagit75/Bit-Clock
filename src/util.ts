@@ -41,4 +41,9 @@ const hashSHA256ToNumber = (data: string): number => Number("0x"+createHash("sha
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
-export { toHexString, toBuffer, pkToKey, skToKey, keyToPk, keyToSk, median, hashSHA256, hashSHA256ToNumber, sleep }
+const isDuplicated = <T,>(elements: T[]): boolean => {
+    const elementsToSetObject = new Set(elements);
+    return !(elementsToSetObject.size === elements.length);
+}
+
+export { toHexString, toBuffer, pkToKey, skToKey, keyToPk, keyToSk, median, hashSHA256, hashSHA256ToNumber, sleep, isDuplicated }
