@@ -103,9 +103,16 @@ const broadcastAndGetRequestStamps = async (pk: string, difficulty: number): Pro
     await broadcastRequestStamps(pk, difficulty)
     var resStamps: Stamp[]|undefined = stampPool.get(pk)
     const stampsLen = () => resStamps?resStamps.length:0
+    const sleepTime = 100
+    const timeout = 100
+    var waitTime = 0
     while (stampsLen() < needNumberOfStamps) {
-        await sleep(100);
+        await sleep(sleepTime);
         resStamps = stampPool.get(pk)
+        waitTime+=sleepTime
+        if(waitTime > timeout){
+            break
+        }
     }
     stampPool.set(pk, [])
     if(!resStamps){
