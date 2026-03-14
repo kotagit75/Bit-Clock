@@ -3,7 +3,7 @@
     <h1>Bit:Clock</h1>
 </div>
 
-Bit:Clock is a ledger-free distributed timestamp system.
+Bit:Clock is a ledger-free distributed timestamp system.You can issue timestamps without relying on centralized servers or large-scale blockchains.By each node generate and share stamps and compile them as proof, we can verify the order in which the data was generated.
 
 [![License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
 
