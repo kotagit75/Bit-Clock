@@ -19,11 +19,12 @@ const calcNonce = (address: Address, count: number, pk: string, difficulty: numb
     }
     return nonce
 }
-const isValidStamp = (stamp: Stamp, pk: string, difficulty: number): boolean => {
+const isValidStamp = (stamp: Stamp, proof_pk: string, difficulty: number): boolean => {
     const isValidCount = stamp.count>=0
-    const isValidNonce = verifyNonce(stamp.address, stamp.count, pk, stamp.nonce, difficulty)
+    const isValidPk = stamp.pk == proof_pk
+    const isValidNonce = verifyNonce(stamp.address, stamp.count, proof_pk, stamp.nonce, difficulty)
     const isValidSign = pkToKey(stamp.address).verify(stamp.toStringForSign(), Buffer.from(stamp.sign))
-    return isValidCount && isValidNonce && isValidSign
+    return isValidCount && isValidNonce && isValidSign && isValidPk
 }
 class Proof{
     constructor(public data: string, public stamps: Stamp[], public sk: string, public address: Address, public sign: Signature, public difficulty: number){}
