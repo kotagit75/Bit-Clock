@@ -52,6 +52,8 @@ export const initAPIServer = () => {
         res.setHeader("Content-Type", "application/json")
         var data = req.body.data
         if (data != undefined){
+            res.send({"result": "Creating proof"});
+            logger.info("API", "Creating proof. Source:", JSON.stringify(req.body));
             (async () => {
                 var proof = await createProof(data)
                 var result = await addProof(proof)
@@ -63,8 +65,6 @@ export const initAPIServer = () => {
                     logger.error("API", "Creating proof was failed. Source:", JSON.stringify(req.body))
                 }
             })()
-            logger.info("API", "Creating proof. Source:", JSON.stringify(req.body))
-            res.send({"result": "Creating proof"})
         }else{
             res.send({"result": "faild: data is undefined"})
         }
