@@ -1,4 +1,4 @@
-import { hashSHA256, keyToPk, median, pkToKey, skToKey } from "@/util"
+import { hashSHA256, isDuplicated, keyToPk, median, pkToKey, skToKey } from "@/util"
 
 export type Address = string
 export type Signature = number[]
@@ -45,8 +45,9 @@ const isValidProof = (proof: Proof): boolean => {
     var proof_pk = keyToPk(skToKey(proof.sk))
     const isValidStamps = proof.stamps.every((stamp, _ ,__) => isValidStamp(stamp, proof_pk, proof.difficulty))
     const isValidNumberOfStamps = proof.stamps.length <= MAX_NUMBER_OF_STAMPS
+    const isNotDuplicatedStamps = !isDuplicated(proof.stamps.map((s,_,__)=>s.address))
     const isValidSign = pkToKey(proof.address).verify(proof.toStringForSign(), Buffer.from(proof.sign))
-    return isValidStamps && isValidNumberOfStamps && isValidSign
+    return isValidStamps && isNotDuplicatedStamps && isValidNumberOfStamps && isValidSign
 }
 const compareTime = (proof1: Proof, proof2: Proof): number => {
     return proof1.sumOfCount() - proof2.sumOfCount()
