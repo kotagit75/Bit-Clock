@@ -42,7 +42,8 @@ const initP2PServer = () => {
                 if(!pk || !difficulty) {
                     break
                 }
-                (async () => createStamp(pk, difficulty))().then((stamp: Stamp|undefined) => {
+                (async () => {
+                    const stamp = createStamp(pk, difficulty)
                     if(!stamp){
                         return
                     }
