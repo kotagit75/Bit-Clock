@@ -50,4 +50,4 @@ class Logger {
     error(domain: LogDomain, ...data: any[]) { this.log('ERROR', domain, ...data); }
 }
 
-export const logger = new Logger("INFO");
+export const logger = new Logger("DEBUG");
