@@ -24,7 +24,7 @@ const isValidStamp = (stamp: Stamp, proof_pk: string, difficulty: number): boole
     return isValidCount && isValidNonce && isValidSign && isValidPk
 }
 class Proof{
-    constructor(public data: string, public stamps: Stamp[], public sk: string, public address: Address, public sign: Signature, public difficulty: number){}
+    constructor(public data: string, public stamps: Stamp[], public sk: string, public address: Address, public sign: Signature, public difficulty: number, public time: number){}
 }
 const sumOfCount = (proof: Proof): number => {
     return proof.stamps.reduce((sum, k) => sum + k.count, 0)
@@ -35,7 +35,7 @@ const medianOfCount = (proof: Proof): number => {
 
 const PROOF_KEY_SIZE = 2048
 const proofToStringForSign = (data: string, stamps: Stamp[], sk: string, address: Address): string => data+JSON.stringify(stamps)+sk+address
-const MAX_NUMBER_OF_STAMPS = 2
+const MAX_NUMBER_OF_STAMPS = 1
 const isValidProof = (proof: Proof): boolean => {
     var proof_pk = keyToPk(skToKey(proof.sk))
     const isValidStamps = proof.stamps.every((stamp, _ ,__) => isValidStamp(stamp, proof_pk, proof.difficulty))
