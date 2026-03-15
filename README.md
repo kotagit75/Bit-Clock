@@ -55,5 +55,16 @@ Options:
   -l, --minLogLevel <optionValue>  set minLogLevel (default: "INFO")
   -h, --help                       display help for command
 ```
+
+## APIs
+| status | method | endpoint | feature |
+| ---- | ---- | ---- | ---- |
+| <ul><li> [x] </ul> | `GET` | /status | get status |
+| <ul><li> [x] </ul> | `GET` | /address | get address |
+| <ul><li> [x] </ul> | `GET` | /pool | get proof pool |
+| <ul><li> [x] </ul> | `GET` | /peers | get peers |
+| <ul><li> [x] </ul> | `POST` | /addPeer | add peer |
+| <ul><li> [x] </ul> | `POST` | /proof | create a proof |
+
 ## License
 [BitClock is under the MIT License.](LICENSE)
