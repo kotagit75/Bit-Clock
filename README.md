@@ -27,26 +27,33 @@ npm install
 ## :gear: Usage
 ```bash
 # run
-npm start
+$ npm start
 
 # get status
-curl http://localhost:8080/status
+$ curl http://localhost:8080/status
 
 # get address
-curl http://localhost:8080/address
+$ curl http://localhost:8080/address
 
 # get pool
-curl http://localhost:8080/pool
+$ curl http://localhost:8080/pool
 
 # get peers
-curl http://localhost:8080/peers
+$ curl http://localhost:8080/peers
 
 # add peer
-curl -X POST -H "Content-Type: application/json" -d '{"url":"http://[peerIP]:3000/"}' http://localhost:8080/addPeer
+$ curl -X POST -H "Content-Type: application/json" -d '{"url":"http://[peerIP]:3000/"}' http://localhost:8080/addPeer
 
 # proof
-curl -X POST -H "Content-Type: application/json" -d '{"data":"Some data"}' http://localhost:8080/proof
-```
+$ curl -X POST -H "Content-Type: application/json" -d '{"data":"Some data"}' http://localhost:8080/proof
 
+# help
+$ npm start -- --help
+Usage: main [options]
+
+Options:
+  -l, --minLogLevel <optionValue>  set minLogLevel (default: "INFO")
+  -h, --help                       display help for command
+```
 ## License
 [BitClock is under the MIT License.](LICENSE)
