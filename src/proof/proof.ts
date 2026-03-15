@@ -5,9 +5,6 @@ export type Signature = number[]
 
 class Stamp{
     constructor(public address: Address, public count: number, public pk: string, public nonce: number, public sign: Signature){}
-    toStringForSign(): string{
-        return stampToStringForSign(this.pk, this.address, this.count, this.nonce)
-    }
 }
 const stampToStringForSign = (pk: string, address: Address, count: number, nonce: number): string => pk + address + String(count) + String(nonce)
 
@@ -23,21 +20,19 @@ const isValidStamp = (stamp: Stamp, proof_pk: string, difficulty: number): boole
     const isValidCount = stamp.count>=0
     const isValidPk = stamp.pk == proof_pk
     const isValidNonce = verifyNonce(stamp.address, stamp.count, proof_pk, stamp.nonce, difficulty)
-    const isValidSign = pkToKey(stamp.address).verify(stamp.toStringForSign(), Buffer.from(stamp.sign))
+    const isValidSign = pkToKey(stamp.address).verify(stampToStringForSign(stamp.pk, stamp.address, stamp.count, stamp.nonce), Buffer.from(stamp.sign))
     return isValidCount && isValidNonce && isValidSign && isValidPk
 }
 class Proof{
     constructor(public data: string, public stamps: Stamp[], public sk: string, public address: Address, public sign: Signature, public difficulty: number){}
-    toStringForSign(){
-        return proofToStringForSign(this.data, this.stamps, this.sk, this.address)
-    }
-    sumOfCount(): number{
-        return this.stamps.reduce((sum, k) => sum + k.count, 0)
-    }
-    medianOfCount(): number{
-        return median(this.stamps.map((s,_,__)=>s.count))
-    }
 }
+const sumOfCount = (proof: Proof): number => {
+    return proof.stamps.reduce((sum, k) => sum + k.count, 0)
+}
+const medianOfCount = (proof: Proof): number => {
+    return median(proof.stamps.map((s,_,__)=>s.count))
+}
+
 const PROOF_KEY_SIZE = 2048
 const proofToStringForSign = (data: string, stamps: Stamp[], sk: string, address: Address): string => data+JSON.stringify(stamps)+sk+address
 const MAX_NUMBER_OF_STAMPS = 2
@@ -46,11 +41,11 @@ const isValidProof = (proof: Proof): boolean => {
     const isValidStamps = proof.stamps.every((stamp, _ ,__) => isValidStamp(stamp, proof_pk, proof.difficulty))
     const isValidNumberOfStamps = proof.stamps.length <= MAX_NUMBER_OF_STAMPS
     const isNotDuplicatedStamps = !isDuplicated(proof.stamps.map((s,_,__)=>s.address))
-    const isValidSign = pkToKey(proof.address).verify(proof.toStringForSign(), Buffer.from(proof.sign))
+    const isValidSign = pkToKey(proof.address).verify(proofToStringForSign(proof.data, proof.stamps, proof.sk, proof.address), Buffer.from(proof.sign))
     return isValidStamps && isNotDuplicatedStamps && isValidNumberOfStamps && isValidSign
 }
 const compareTime = (proof1: Proof, proof2: Proof): number => {
-    return proof1.sumOfCount() - proof2.sumOfCount()
+    return sumOfCount(proof1) - sumOfCount(proof2)
 }
 
 const newProofSet = (proofs: Proof[]|undefined): Set<Proof> => {
