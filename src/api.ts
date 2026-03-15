@@ -26,10 +26,10 @@ export const initAPIServer = () => {
     app.get("/address", (req, res) => {
         res.send(getAddress())
     })
-    app.get("/getPool", (req, res) => {
+    app.get("/pool", (req, res) => {
         res.send(exportProofPool(getProofPool()))
     })
-    app.get("/getPeers", (req, res) => {
+    app.get("/peers", (req, res) => {
         res.send(getPeers())
     })
     app.post("/addPeer", (req, res) => {
