@@ -10,7 +10,7 @@ BitClock is a ledger-free distributed timestamp system. You can issue timestamps
 > [!NOTE]
 > BitClock is currently in active development. The API and features may change without notice.
 
-## Documents
+## :books: Documents
 [About the algorithm (Not finished yet)](docs/algorithm.md)
 ## :rocket: Set up
 ```bash
@@ -66,5 +66,5 @@ Options:
 | <ul><li> [x] </ul> | `POST` | /addPeer | add peer |
 | <ul><li> [x] </ul> | `POST` | /proof | create a proof |
 
-## License
+## :ticket: License
 [BitClock is under the MIT License.](LICENSE)
