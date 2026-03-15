@@ -44,10 +44,14 @@ class Logger {
         }
     }
 
+    setMinShowLogLevel(level: LogLevel) {
+        this.minShowLogLevel = level
+    }
+
     debug(domain: LogDomain, ...data: any[]) { this.log('DEBUG', domain, ...data); }
     info(domain: LogDomain, ...data: any[]) { this.log('INFO', domain, ...data); }
     warn(domain: LogDomain, ...data: any[]) { this.log('WARN', domain, ...data); }
     error(domain: LogDomain, ...data: any[]) { this.log('ERROR', domain, ...data); }
 }
 
-export const logger = new Logger("DEBUG");
+export const logger = new Logger("INFO");
