@@ -40,7 +40,7 @@ class Proof{
 }
 const PROOF_KEY_SIZE = 2048
 const proofToStringForSign = (data: string, stamps: Stamp[], sk: string, address: Address): string => data+JSON.stringify(stamps)+sk+address
-const MAX_NUMBER_OF_STAMPS = 1
+const MAX_NUMBER_OF_STAMPS = 2
 const isValidProof = (proof: Proof): boolean => {
     var proof_pk = keyToPk(skToKey(proof.sk))
     const isValidStamps = proof.stamps.every((stamp, _ ,__) => isValidStamp(stamp, proof_pk, proof.difficulty))
