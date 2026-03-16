@@ -64,7 +64,7 @@ Options:
 
 ## :jigsaw: APIs
 
-| status | method | endpoint | feature |
+| implemented | method | endpoint | feature |
 | ---- | ---- | ---- | ---- |
 | <ul><li> [x] </ul> | `GET` | /status | get status |
 | <ul><li> [x] </ul> | `GET` | /address | get address |
