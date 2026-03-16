@@ -26,8 +26,8 @@ const isValidStamp = (stamp: Stamp, proof_pk: string, difficulty: number): boole
 class Proof{
     constructor(public data: string, public stamps: Stamp[], public sk: string, public address: Address, public sign: Signature, public difficulty: number, public time: number){}
 }
-const sumOfCount = (proof: Proof): number => {
-    return proof.stamps.reduce((sum, k) => sum + k.count, 0)
+const sumOfCount = (stamps: Stamp[]): number => {
+    return stamps.reduce((sum, k) => sum + k.count, 0)
 }
 const medianOfCount = (proof: Proof): number => {
     return median(proof.stamps.map((s,_,__)=>s.count))
@@ -44,8 +44,12 @@ const isValidProof = (proof: Proof): boolean => {
     const isValidSign = pkToKey(proof.address).verify(proofToStringForSign(proof.data, proof.stamps, proof.sk, proof.address), Buffer.from(proof.sign))
     return isValidStamps && isNotDuplicatedStamps && isValidNumberOfStamps && isValidSign
 }
+
+// Compare the sum of the counts of addresses that appear in both proof1 and proof2
 const compareTime = (proof1: Proof, proof2: Proof): number => {
-    return sumOfCount(proof1) - sumOfCount(proof2)
+    const proof1DuplicatedStamps = proof1.stamps.concat(proof2.stamps).filter((stamp, index, stamps) => stamps.findLastIndex((_stamp,_,__)=>stamp.address == _stamp.address) != index)
+    const proof2DuplicatedStamps = proof2.stamps.concat(proof1.stamps).filter((stamp, index, stamps) => stamps.findLastIndex((_stamp,_,__)=>stamp.address == _stamp.address) != index)
+    return sumOfCount(proof1DuplicatedStamps) - sumOfCount(proof2DuplicatedStamps)
 }
 
 const newProofSet = (proofs: Proof[]|undefined): Set<Proof> => {
