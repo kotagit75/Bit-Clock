@@ -7,6 +7,8 @@ BitClock is a ledger-free distributed timestamp system. You can issue timestamps
 
 [![License](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE)
 
+> [!IMPORTANT]
+> BitClock is in the process of migrating from TypeScript to Rust.
 > [!NOTE]
 > BitClock is currently in active development. The API and features may change without notice.
 
