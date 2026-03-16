@@ -9,6 +9,7 @@ BitClock is a ledger-free distributed timestamp system. You can issue timestamps
 
 > [!IMPORTANT]
 > BitClock is in the process of migrating from TypeScript to Rust.
+
 > [!NOTE]
 > BitClock is currently in active development. The API and features may change without notice.
 
