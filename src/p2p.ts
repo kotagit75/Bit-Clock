@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { createStamp, updateProofPool } from "./proof/node";
-import { MIN_NUMBER_OF_STAMPS, Stamp, type Proof } from "./proof/proof";
+import { calcNumberOfStamps, Stamp, type Proof } from "./proof/proof";
 import { URL } from "url";
 import { logger } from "./logger";
 import { exportMessage, exportProofPool, exportStamp, importMessage, importProofPool, importStamp } from "./parse";
@@ -24,8 +24,8 @@ const initP2PServer = () => {
     addPeer(new URL(`http://localhost:${PORT}/`))
 
     app.use(cors())
-    app.use(express.json())
-    app.use(express.urlencoded({ extended: true }))
+    app.use(express.json({limit: '50mb'}))
+    app.use(express.urlencoded({ limit: '50mb', extended: true }))
 
     app.post("/", (req, res) => {
         var message: Message|undefined = importMessage(JSON.stringify(req.body))
@@ -44,7 +44,7 @@ const initP2PServer = () => {
                     res.send({"result": "fail"})
                     break
                 }
-                for (let i = 0; i < MIN_NUMBER_OF_STAMPS; i++) {
+                for (let i = 0; i < calcNumberOfStamps(difficulty); i++) {
                     addUnStampedPool(pk, difficulty, i)
                 }
                 res.send({"result": "creating"})
@@ -108,11 +108,11 @@ const broadcastAndGetRequestStamps = async (pk: string, difficulty: number): Pro
     
     const stampsLen = () => resStamps?resStamps.length:0
     
-    const sleepTime = 100
-    const timeout = sleepTime*1000
+    const sleepTime = 10
+    const timeout = 100000
     var waitTime = 0
     
-    while (stampsLen() < MIN_NUMBER_OF_STAMPS) {
+    while (stampsLen() < calcNumberOfStamps(difficulty)) {
         await sleep(sleepTime);
         resStamps = stampPool.get(pk)
         waitTime+=sleepTime
