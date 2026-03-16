@@ -48,7 +48,7 @@ $ curl http://localhost:8080/pool
 $ curl http://localhost:8080/peers
 
 # add peer
-$ curl -X POST -H "Content-Type: application/json" -d '{"url":"http://[peerIP]:3000/"}' http://localhost:8080/addPeer
+$ curl -X POST -H "Content-Type: application/json" -d '{"url":"http://[peerIP]:3000/"}' http://localhost:8080/add-peer
 
 # proof
 $ curl -X POST -H "Content-Type: application/json" -d '{"data":"Some data"}' http://localhost:8080/proof
@@ -70,7 +70,7 @@ Options:
 | <ul><li> [x] </ul> | `GET` | /address | get address |
 | <ul><li> [x] </ul> | `GET` | /pool | get proof pool |
 | <ul><li> [x] </ul> | `GET` | /peers | get peers |
-| <ul><li> [x] </ul> | `POST` | /addPeer | add peer |
+| <ul><li> [x] </ul> | `POST` | /add-peer | add peer |
 | <ul><li> [x] </ul> | `POST` | /proof | create a proof |
 
 ## :ticket: License
