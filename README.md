@@ -11,7 +11,9 @@ BitClock is a ledger-free distributed timestamp system. You can issue timestamps
 > BitClock is currently in active development. The API and features may change without notice.
 
 ## :sparkles: Features
-- :mantelpiece_clock: Distributed timestamp without ledger - We can verify timestamp without global ledgers or blockchains.
+- 🕰️ Distributed timestamp without ledger - We can verify timestamp without global ledgers or blockchains.
+- ⚡ Fast timestamp creation - Once you've collected a certain number of stamps, you can create a proof right away.
+- 🔒 Instant confirmation - A proof is finalized once it is validated by the network and cannot be reversed.
 
 ## :books: Documents
 - [About the algorithm (Not finished yet)](docs/algorithm.md)
