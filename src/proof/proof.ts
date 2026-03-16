@@ -33,16 +33,16 @@ const medianOfCount = (proof: Proof): number => {
     return median(proof.stamps.map((s,_,__)=>s.count))
 }
 
-const PROOF_KEY_SIZE = 2048
+const PROOF_KEY_SIZE = 512
 const proofToStringForSign = (data: string, stamps: Stamp[], sk: string, address: Address): string => data+JSON.stringify(stamps)+sk+address
-const MAX_NUMBER_OF_STAMPS = 1
+const MIN_NUMBER_OF_STAMPS = 16
 const isValidProof = (proof: Proof): boolean => {
     var proof_pk = keyToPk(skToKey(proof.sk))
     const isValidStamps = proof.stamps.every((stamp, _ ,__) => isValidStamp(stamp, proof_pk, proof.difficulty))
-    const isValidNumberOfStamps = proof.stamps.length <= MAX_NUMBER_OF_STAMPS
-    const isNotDuplicatedStamps = !isDuplicated(proof.stamps.map((s,_,__)=>s.address))
+    const isValidNumberOfStamps = proof.stamps.length >= MIN_NUMBER_OF_STAMPS
+    // const isNotDuplicatedStamps = !isDuplicated(proof.stamps.map((s,_,__)=>s.address))
     const isValidSign = pkToKey(proof.address).verify(proofToStringForSign(proof.data, proof.stamps, proof.sk, proof.address), Buffer.from(proof.sign))
-    return isValidStamps && isNotDuplicatedStamps && isValidNumberOfStamps && isValidSign
+    return isValidStamps /*&& isNotDuplicatedStamps*/ && isValidNumberOfStamps && isValidSign
 }
 const compareTime = (proof1: Proof, proof2: Proof): number => {
     return sumOfCount(proof1) - sumOfCount(proof2)
@@ -52,4 +52,4 @@ const newProofSet = (proofs: Proof[]|undefined): Set<Proof> => {
     return new Set(proofs)
 }
 
-export { Stamp, isValidStamp, calcNonce, stampToStringForSign, Proof, proofToStringForSign, MAX_NUMBER_OF_STAMPS, PROOF_KEY_SIZE, isValidProof, newProofSet, compareTime }
+export { Stamp, isValidStamp, calcNonce, stampToStringForSign, Proof, proofToStringForSign, MIN_NUMBER_OF_STAMPS, PROOF_KEY_SIZE, isValidProof, newProofSet, compareTime }
