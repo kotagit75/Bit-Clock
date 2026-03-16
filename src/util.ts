@@ -25,15 +25,18 @@ function keyToSk(key: NodeRSA): string {
     return toHexString(key.exportKey("pkcs1-private-der"))
 }
 
-const median = (numbers: number[]): number => {
-  const half = (numbers.length / 2) | 0
-  const arr = numbers.sort((a, b) => {
-    return a - b
-  })
-  if (arr.length % 2) {
-    return arr[half]
-  }
-  return (arr[half - 1] + arr[half]) / 2
+const median = (numbers: number[]): number|undefined => {
+    if(numbers.length == 0){
+        return undefined
+    }
+    const half = (numbers.length / 2) | 0
+    const arr = numbers.sort((a, b) => {
+        return a - b
+    })
+    if (arr.length % 2) {
+        return arr[half]
+    }
+    return (arr[half - 1] + arr[half]) / 2
 }
 
 const hashSHA256 = (data: string): string => createHash("sha256").update(data).digest('hex')
