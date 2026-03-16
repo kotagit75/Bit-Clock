@@ -130,7 +130,7 @@ const calcActualTime = (endTime: number): number|undefined => {
 
 const calcDifficulty = (endTime: number): number =>{
     const base = 3
-    const targetTime = 10000
+    const targetTime = 1000*10 // targetTime should be bigger
     const lastestIndexBeforeEndTime = sortProofPoolTimes().findIndex((v,_,__)=>v<endTime)
     const oldProof = sortProofPool()[lastestIndexBeforeEndTime]
     const actualTime = calcActualTime(endTime)
