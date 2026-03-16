@@ -12,8 +12,8 @@ export const initAPIServer = () => {
     const app = express()
     
     app.use(cors())
-    app.use(express.json())
-    app.use(express.urlencoded({ extended: true }))
+    app.use(express.json({limit: '50mb'}))
+    app.use(express.urlencoded({ limit: '50mb', extended: true }))
     
     app.use((req, res, next) => {
         logger.debug("API", `Received request:`, req.url)
@@ -50,16 +50,17 @@ export const initAPIServer = () => {
         res.setHeader("Content-Type", "application/json")
         var data = req.body.data
         if (data != undefined){
-            res.send({"result": "Creating proof"});
             logger.info("API", "Creating proof. Source:", JSON.stringify(req.body));
             var proof = await createProof(data)
             var result = await addProof(proof)
             if (result){
                 logger.info("API", "Creating proof was successful.")
                 broadcastUpdateProofPool(getProofPool())
+                res.send({"result": "Creating proof was successful."});
             }
             else{
                 logger.error("API", "Creating proof was failed. Source:", JSON.stringify(req.body))
+                res.send({"result": "Creating proof was failed."});
             }
         }else{
             res.send({"result": "faild: data is undefined"})
