@@ -1,13 +1,13 @@
 import NodeRSA from "node-rsa";
 import fs from "fs";
 
-import { keyToPk, keyToSk, skToKey } from "@/util";
+import { isConsecutive, keyToPk, keyToSk, skToKey } from "@/util";
 import { calcNonce, compareTime, isValidProof, Proof, PROOF_KEY_SIZE, proofToStringForSign, Stamp, stampToStringForSign, type Address, type Signature } from "./proof";
 import { Counter } from "./counter";
 import { broadcastAndGetRequestStamps, broadcastUpdateProofPool } from "../p2p";
 import { logger } from "@/logger";
 
-const NODE_KEY_SIZE = 2048
+const NODE_KEY_SIZE = 512
 
 var nodeKey: NodeRSA
 var address: Address
@@ -49,9 +49,7 @@ const createStamp = (pk: string, difficulty: number): Stamp => {
     return new Stamp(getAddress(), count, pk, nonce, sign)
 }
 const fetchStamps = async (pk: string, difficulty: number): Promise<Stamp[]> => {
-    var myStamp = createStamp(pk, difficulty)
-    var peerStamps = await broadcastAndGetRequestStamps(pk, difficulty)
-    return peerStamps.concat(myStamp)
+    return await broadcastAndGetRequestStamps(pk, difficulty)
 }
 const createProof = async (data: string): Promise<Proof> => {
     var proofKey = new NodeRSA({ b: PROOF_KEY_SIZE })
@@ -85,7 +83,13 @@ const getLastestCountOfAddress = (address: Address): number => {
 const getLastestCountOfMine = ():number => getLastestCountOfAddress(getAddress())
 
 const checkProofStamps = async (proof: Proof): Promise<boolean> => {
-    const isValidStampCounts = proof.stamps.every((stamp, _, __) => getLastestCountOfAddress(stamp.address)+1 == stamp.count)
+    const findStampsByAddress = (address: Address): Stamp[] => proof.stamps.filter((stamp, _, __) => stamp.address == address)
+    const findCountsByAddress = (address: Address): number[] => findStampsByAddress(address).map((s,_,__)=>s.count)
+    const addresses = Array.from(new Set(proof.stamps.map((s,_,__)=>s.address)))// Remove duplicates
+    const isValidStampCounts = addresses.every((address,_,__)=>{
+        const lastestCount = getLastestCountOfAddress(address)+1
+        return findCountsByAddress(address).every((count,_,__)=>count==lastestCount)
+    })
     return isValidStampCounts
 }
 const addProof = async (proof: Proof): Promise<boolean> => {
