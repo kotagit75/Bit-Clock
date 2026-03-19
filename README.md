@@ -25,7 +25,7 @@ BitClock is a ledger-free distributed timestamp system. You can issue timestamps
 ### Installation
 ```bash
 # Clone the repository (or Download ZIP)
-git clone https://github.com/kotagit75/bitclock.git
+git clone https://github.com/kotagit75/bitclock-PoC.git
 
 # Navigate to the project directory
 cd bitclock
